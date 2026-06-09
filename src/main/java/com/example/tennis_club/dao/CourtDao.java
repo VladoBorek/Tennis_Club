@@ -15,14 +15,14 @@ public class CourtDao extends BaseDao<Court> {
         return entityManager.createQuery("""
                         select court
                         from Court court
-                        join fetch court.surfaceType
+                        join fetch court.surfaceType surfaceType
                         where court.courtNumber = :courtNumber
                           and court.deleted = false
-                        """, Court.class).
-                setParameter("courtNumber", courtNumber).
-                getResultList()
-                .stream().
-                findFirst();
+                          and surfaceType.deleted = false
+                        """, Court.class)
+                .setParameter("courtNumber", courtNumber)
+                .getResultStream()
+                .findFirst();
     }
 
     public boolean existsActiveBySurfaceTypeId(Long surfaceTypeId) {

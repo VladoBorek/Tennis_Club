@@ -13,9 +13,11 @@ public abstract class BaseDao<T extends BaseEntity> {
 
 
     private final Class<T> entityClass;
+    private final String entityName;
 
-    public BaseDao(Class<T> entityClass) {
+    protected BaseDao(Class<T> entityClass) {
         this.entityClass = entityClass;
+        this.entityName = entityClass.getSimpleName();
     }
 
     public T save(T entity) {
@@ -36,7 +38,7 @@ public abstract class BaseDao<T extends BaseEntity> {
                 from %s entity
                 where entity.id = :id
                   and entity.deleted = false
-                """.formatted(entityClass.getSimpleName());
+                """.formatted(entityName);
 
         return entityManager.createQuery(query, entityClass)
                 .setParameter("id", id)
@@ -49,7 +51,7 @@ public abstract class BaseDao<T extends BaseEntity> {
                 select entity
                 from %s entity
                 where entity.deleted = false
-                """.formatted(entityClass.getSimpleName());
+                """.formatted(entityName);
 
         return entityManager.createQuery(query, entityClass)
                 .getResultList();

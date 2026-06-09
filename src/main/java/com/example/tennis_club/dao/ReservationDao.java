@@ -13,14 +13,19 @@ public class ReservationDao extends BaseDao<Reservation> {
         super(Reservation.class);
     }
 
+    // Surface type soft delete is not filtered here because I think that old
+    // reservations should remain readable even if that surface type is later disabled / removed
     public List<Reservation> findActiveByCourtNumberOrderByCreatedAt(String courtNumber) {
         return entityManager.createQuery("""
                         select reservation
                         from Reservation reservation
                         join fetch reservation.court court
+                        join fetch court.surfaceType surfaceType
                         join fetch reservation.customer customer
                         where court.courtNumber = :courtNumber
                           and reservation.deleted = false
+                          and court.deleted = false
+                          and customer.deleted = false
                         order by reservation.createdAt asc
                         """, Reservation.class)
                 .setParameter("courtNumber", courtNumber)
@@ -32,10 +37,12 @@ public class ReservationDao extends BaseDao<Reservation> {
                         select reservation
                         from Reservation reservation
                         join fetch reservation.court court
-                        join fetch court.surfaceType
+                        join fetch court.surfaceType surfaceType
                         join fetch reservation.customer customer
                         where customer.phoneNumber = :phoneNumber
                           and reservation.deleted = false
+                          and court.deleted = false
+                          and customer.deleted = false
                         order by reservation.startTime asc
                         """, Reservation.class)
                 .setParameter("phoneNumber", phoneNumber)
@@ -47,11 +54,13 @@ public class ReservationDao extends BaseDao<Reservation> {
                         select reservation
                         from Reservation reservation
                         join fetch reservation.court court
-                        join fetch court.surfaceType
+                        join fetch court.surfaceType surfaceType
                         join fetch reservation.customer customer
                         where customer.phoneNumber = :phoneNumber
                           and reservation.startTime > :now
                           and reservation.deleted = false
+                          and court.deleted = false
+                          and customer.deleted = false
                         order by reservation.startTime asc
                         """, Reservation.class)
                 .setParameter("phoneNumber", phoneNumber)
@@ -63,8 +72,10 @@ public class ReservationDao extends BaseDao<Reservation> {
         Long count = entityManager.createQuery("""
                         select count(reservation)
                         from Reservation reservation
-                        where reservation.court.id = :courtId
+                        join reservation.court court
+                        where court.id = :courtId
                           and reservation.deleted = false
+                          and court.deleted = false
                           and reservation.startTime < :endTime
                           and reservation.endTime > :startTime
                         """, Long.class)
