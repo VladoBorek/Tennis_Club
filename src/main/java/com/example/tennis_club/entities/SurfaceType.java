@@ -16,10 +16,10 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "surface",
-        uniqueConstraints = @UniqueConstraint(name = "uk_surface_name", columnNames = "name")
+        name = "surface_type",
+        uniqueConstraints = @UniqueConstraint(name = "uk_surface_type_name", columnNames = "name")
 )
-public class Surface extends BaseEntity {
+public class SurfaceType extends BaseEntity {
 
     @Column(nullable = false, length = 50)
     private String name;

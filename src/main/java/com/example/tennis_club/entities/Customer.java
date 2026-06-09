@@ -15,9 +15,9 @@ import lombok.Setter;
 @Table(name = "customer",
         uniqueConstraints = @UniqueConstraint(name = "uk_customer_phone_number", columnNames = "phone_number"))
 public class Customer extends BaseEntity {
-    private final int max_phone_number_standard_length = 16;
+    private static final int MAX_PHONE_NUMBER_LENGTH = 16;
 
-    @Column(name = "phone_number", nullable = false, length = max_phone_number_standard_length)
+    @Column(name = "phone_number", nullable = false, length = MAX_PHONE_NUMBER_LENGTH)
     private String phoneNumber;
 
     @Column(nullable = false, length = 30)

@@ -20,6 +20,6 @@ public class Court extends BaseEntity {
     private String courtNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "surface_id", nullable = false)
-    private Surface surface;
+    @JoinColumn(name = "surface_type_id", nullable = false)
+    private SurfaceType surfaceType;
 }
