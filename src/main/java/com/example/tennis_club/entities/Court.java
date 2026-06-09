@@ -14,10 +14,7 @@ import lombok.Setter;
         name = "court",
         uniqueConstraints = @UniqueConstraint(name = "uk_court_number", columnNames = "court_number")
 )
-public class Court {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Court extends BaseEntity {
 
     @Column(name = "court_number", nullable = false, length = 50)
     private String courtNumber;
@@ -25,7 +22,4 @@ public class Court {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "surface_id", nullable = false)
     private Surface surface;
-
-    @Column(nullable = false)
-    private boolean deleted = false;
 }

@@ -1,7 +1,10 @@
 package com.example.tennis_club.entities;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,18 +19,12 @@ import java.math.BigDecimal;
         name = "surface",
         uniqueConstraints = @UniqueConstraint(name = "uk_surface_name", columnNames = "name")
 )
-public class Surface {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Surface extends BaseEntity {
 
     @Column(nullable = false, length = 50)
     private String name;
 
     @Column(name = "price_per_minute", nullable = false, precision = 10, scale = 2)
     private BigDecimal pricePerMinute;
-
-    @Column(nullable = false)
-    private boolean deleted = false;
 }
 
