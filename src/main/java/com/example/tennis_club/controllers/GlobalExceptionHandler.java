@@ -6,6 +6,7 @@ import com.example.tennis_club.exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,8 +21,11 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
-    public ApiErrorResponse handleBadRequest(BadRequestException exception, HttpServletRequest request) {
-        return errorResponse(
+    public ResponseEntity<ApiErrorResponse> handleBadRequest(
+            BadRequestException exception,
+            HttpServletRequest request
+    ) {
+        return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 exception.getMessage(),
                 request.getRequestURI(),
@@ -30,8 +34,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ApiErrorResponse handleNotFound(NotFoundException exception, HttpServletRequest request) {
-        return errorResponse(
+    public ResponseEntity<ApiErrorResponse> handleNotFound(
+            NotFoundException exception,
+            HttpServletRequest request
+    ) {
+        return buildErrorResponse(
                 HttpStatus.NOT_FOUND,
                 exception.getMessage(),
                 request.getRequestURI(),
@@ -40,14 +47,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiErrorResponse handleValidation(MethodArgumentNotValidException exception, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleValidation(
+            MethodArgumentNotValidException exception,
+            HttpServletRequest request
+    ) {
         Map<String, String> fieldErrors = new LinkedHashMap<>();
 
         exception.getBindingResult()
                 .getFieldErrors()
                 .forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
 
-        return errorResponse(
+        return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "Request validation failed",
                 request.getRequestURI(),
@@ -56,8 +66,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ApiErrorResponse handleConstraintViolation(ConstraintViolationException exception, HttpServletRequest request) {
-        return errorResponse(
+    public ResponseEntity<ApiErrorResponse> handleConstraintViolation(
+            ConstraintViolationException exception,
+            HttpServletRequest request
+    ) {
+        return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 exception.getMessage(),
                 request.getRequestURI(),
@@ -69,8 +82,11 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class
     })
-    public ApiErrorResponse handleInvalidRequest(Exception exception, HttpServletRequest request) {
-        return errorResponse(
+    public ResponseEntity<ApiErrorResponse> handleInvalidRequest(
+            Exception exception,
+            HttpServletRequest request
+    ) {
+        return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "Invalid request",
                 request.getRequestURI(),
@@ -78,13 +94,13 @@ public class GlobalExceptionHandler {
         );
     }
 
-    private ApiErrorResponse errorResponse(
+    private ResponseEntity<ApiErrorResponse> buildErrorResponse(
             HttpStatus status,
             String message,
             String path,
             Map<String, String> fieldErrors
     ) {
-        return new ApiErrorResponse(
+        ApiErrorResponse response = new ApiErrorResponse(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
@@ -92,5 +108,7 @@ public class GlobalExceptionHandler {
                 path,
                 fieldErrors
         );
+
+        return ResponseEntity.status(status).body(response);
     }
 }
