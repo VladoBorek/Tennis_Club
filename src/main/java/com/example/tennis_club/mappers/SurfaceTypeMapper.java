@@ -5,7 +5,7 @@ import com.example.tennis_club.entities.SurfaceType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SurfaceTypeMapper {
+public final class SurfaceTypeMapper {
     public static SurfaceTypeResponse toSurfaceTypeResponse(SurfaceType surfaceType) {
         return new SurfaceTypeResponse(
                 surfaceType.getId(),

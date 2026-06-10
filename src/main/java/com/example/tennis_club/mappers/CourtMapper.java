@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class CourtMapper {
+public final class CourtMapper {
 
     public static CourtResponse toResponse(Court court) {
         return new CourtResponse(
