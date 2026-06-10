@@ -6,6 +6,7 @@ import com.example.tennis_club.dtos.surface.SurfaceTypeResponse;
 import com.example.tennis_club.services.CourtService;
 import com.example.tennis_club.services.SurfaceTypeService;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,13 +19,17 @@ import java.util.List;
 public class DataInitializer {
 
     @Bean
+    @ConditionalOnProperty(
+            prefix = "app.data-initialization",
+            name = "enabled",
+            havingValue = "true"
+    )
     public ApplicationRunner initializeData(
-            DataInitializationProperties properties,
             SurfaceTypeService surfaceTypeService,
             CourtService courtService
     ) {
         return args -> {
-            if (!properties.isEnabled() || !surfaceTypeService.getAllSurfaceTypes().isEmpty()) {
+            if (!surfaceTypeService.getAllSurfaceTypes().isEmpty()) {
                 return;
             }
 
