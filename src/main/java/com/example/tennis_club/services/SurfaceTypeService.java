@@ -36,7 +36,7 @@ public class SurfaceTypeService {
 
     @Transactional(readOnly = true)
     public SurfaceTypeResponse getSurfaceTypeById(Long id) {
-        SurfaceType surfaceType = getActiveSurfaceTypeEntityById(id);
+        SurfaceType surfaceType = getActiveSurfaceTypeById(id);
         return SurfaceTypeMapper.toSurfaceTypeResponse(surfaceType);
     }
 
@@ -52,7 +52,7 @@ public class SurfaceTypeService {
     }
 
     public SurfaceTypeResponse updateSurfaceType(Long id, SurfaceTypeRequest request) {
-        SurfaceType surfaceType = getActiveSurfaceTypeEntityById(id);
+        SurfaceType surfaceType = getActiveSurfaceTypeById(id);
 
         if (!Objects.equals(surfaceType.getName(), request.name())) {
             validateSurfaceTypeNameIsUnique(request.name());
@@ -66,7 +66,7 @@ public class SurfaceTypeService {
     }
 
     public void deleteSurfaceType(Long id) {
-        SurfaceType surfaceType = getActiveSurfaceTypeEntityById(id);
+        SurfaceType surfaceType = getActiveSurfaceTypeById(id);
 
         if (courtDao.existsActiveBySurfaceTypeId(id)) {
             throw new BadRequestException("Surface type is used by active courts");
@@ -75,12 +75,12 @@ public class SurfaceTypeService {
         surfaceTypeDao.softDelete(surfaceType);
     }
 
-    private SurfaceType getActiveSurfaceTypeEntityById(Long id) {
+    private SurfaceType getActiveSurfaceTypeById(Long id) {
         return surfaceTypeDao.findActiveById(id)
                 .orElseThrow(() -> new NotFoundException("Surface type not found"));
     }
 
-    
+
     private void validateSurfaceTypeNameIsUnique(String name) {
         surfaceTypeDao.findActiveByName(name)
                 .ifPresent(surfaceType -> {
