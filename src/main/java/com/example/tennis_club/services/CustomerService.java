@@ -39,7 +39,7 @@ public class CustomerService {
 
     private Customer validateExistingCustomerName(Customer customer, String requestedName) {
         if (!customer.getName().equals(requestedName)) {
-            throw new BadRequestException("Customer is not correct for given phon number");
+            throw new BadRequestException("Customer is not correct for given phone number");
         }
 
         return customer;
