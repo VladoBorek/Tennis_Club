@@ -11,7 +11,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SurfaceTypeDaoTest extends utils {
+public class SurfaceTypeDaoTest extends daoUtils {
     @Autowired
     private SurfaceTypeDao surfaceTypeDao;
 

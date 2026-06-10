@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 @SpringBootTest
 @Transactional
-public class utils {
+public class daoUtils {
 
     @Autowired
     protected EntityManager entityManager;
