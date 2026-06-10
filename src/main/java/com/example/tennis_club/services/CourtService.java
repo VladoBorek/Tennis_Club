@@ -71,6 +71,12 @@ public class CourtService {
         courtDao.softDelete(getActiveCourtById(id));
     }
 
+    @Transactional(readOnly = true)
+    public Court getActiveCourtByCourtNumber(String courtNumber) {
+        return courtDao.findActiveByCourtNumber(courtNumber)
+                .orElseThrow(() -> new NotFoundException("Court not found"));
+    }
+
     private Court getActiveCourtById(Long id) {
         return courtDao.findActiveById(id)
                 .orElseThrow(() -> new NotFoundException("Court not found"));

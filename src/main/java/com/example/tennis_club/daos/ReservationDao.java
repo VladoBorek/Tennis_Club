@@ -13,9 +13,7 @@ public class ReservationDao extends BaseDao<Reservation> {
         super(Reservation.class);
     }
 
-    // Surface type and court soft delete is not filtered here because I think that old
-    // reservations should remain readable even if they are later disabled / removed
-    // Reservation history remains readable even if the related court or surface type is later disabled.
+    // Reservation history remains readable even if related court, customer, or surface type is later disabled.
     public List<Reservation> findActiveByCourtNumberOrderByCreatedAt(String courtNumber) {
         return entityManager.createQuery("""
                         select reservation
@@ -72,6 +70,30 @@ public class ReservationDao extends BaseDao<Reservation> {
                           and reservation.startTime < :endTime
                           and reservation.endTime > :startTime
                         """, Long.class)
+                .setParameter("courtId", courtId)
+                .setParameter("startTime", startTime)
+                .setParameter("endTime", endTime)
+                .getSingleResult();
+
+        return count > 0;
+    }
+
+    public boolean existsOverlappingActiveReservationExcludingId(
+            Long reservationId,
+            Long courtId,
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
+        Long count = entityManager.createQuery("""
+                        select count(reservation)
+                        from Reservation reservation
+                        where reservation.id <> :reservationId
+                          and reservation.court.id = :courtId
+                          and reservation.deleted = false
+                          and reservation.startTime < :endTime
+                          and reservation.endTime > :startTime
+                        """, Long.class)
+                .setParameter("reservationId", reservationId)
                 .setParameter("courtId", courtId)
                 .setParameter("startTime", startTime)
                 .setParameter("endTime", endTime)

@@ -2,11 +2,9 @@ package com.example.tennis_club.mappers;
 
 import com.example.tennis_club.dtos.court.CourtResponse;
 import com.example.tennis_club.entities.Court;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public final class CourtMapper {
 
     public static CourtResponse toResponse(Court court) {
