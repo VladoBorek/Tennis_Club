@@ -1,4 +1,4 @@
-package com.example.tennis_club.dao;
+package com.example.tennis_club.daos;
 
 import com.example.tennis_club.entities.Reservation;
 import org.springframework.stereotype.Repository;
@@ -13,19 +13,16 @@ public class ReservationDao extends BaseDao<Reservation> {
         super(Reservation.class);
     }
 
-    // Surface type soft delete is not filtered here because I think that old
-    // reservations should remain readable even if that surface type is later disabled / removed
+    // Reservation history remains readable even if related court, customer, or surface type is later disabled.
     public List<Reservation> findActiveByCourtNumberOrderByCreatedAt(String courtNumber) {
         return entityManager.createQuery("""
                         select reservation
                         from Reservation reservation
                         join fetch reservation.court court
-                        join fetch court.surfaceType surfaceType
+                        join fetch court.surfaceType
                         join fetch reservation.customer customer
                         where court.courtNumber = :courtNumber
                           and reservation.deleted = false
-                          and court.deleted = false
-                          and customer.deleted = false
                         order by reservation.createdAt asc
                         """, Reservation.class)
                 .setParameter("courtNumber", courtNumber)
@@ -37,12 +34,10 @@ public class ReservationDao extends BaseDao<Reservation> {
                         select reservation
                         from Reservation reservation
                         join fetch reservation.court court
-                        join fetch court.surfaceType surfaceType
+                        join fetch court.surfaceType
                         join fetch reservation.customer customer
                         where customer.phoneNumber = :phoneNumber
                           and reservation.deleted = false
-                          and court.deleted = false
-                          and customer.deleted = false
                         order by reservation.startTime asc
                         """, Reservation.class)
                 .setParameter("phoneNumber", phoneNumber)
@@ -54,13 +49,11 @@ public class ReservationDao extends BaseDao<Reservation> {
                         select reservation
                         from Reservation reservation
                         join fetch reservation.court court
-                        join fetch court.surfaceType surfaceType
+                        join fetch court.surfaceType
                         join fetch reservation.customer customer
                         where customer.phoneNumber = :phoneNumber
                           and reservation.startTime > :now
                           and reservation.deleted = false
-                          and court.deleted = false
-                          and customer.deleted = false
                         order by reservation.startTime asc
                         """, Reservation.class)
                 .setParameter("phoneNumber", phoneNumber)
@@ -72,13 +65,35 @@ public class ReservationDao extends BaseDao<Reservation> {
         Long count = entityManager.createQuery("""
                         select count(reservation)
                         from Reservation reservation
-                        join reservation.court court
-                        where court.id = :courtId
+                        where reservation.court.id = :courtId
                           and reservation.deleted = false
-                          and court.deleted = false
                           and reservation.startTime < :endTime
                           and reservation.endTime > :startTime
                         """, Long.class)
+                .setParameter("courtId", courtId)
+                .setParameter("startTime", startTime)
+                .setParameter("endTime", endTime)
+                .getSingleResult();
+
+        return count > 0;
+    }
+
+    public boolean existsOverlappingActiveReservationExcludingId(
+            Long reservationId,
+            Long courtId,
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
+        Long count = entityManager.createQuery("""
+                        select count(reservation)
+                        from Reservation reservation
+                        where reservation.id <> :reservationId
+                          and reservation.court.id = :courtId
+                          and reservation.deleted = false
+                          and reservation.startTime < :endTime
+                          and reservation.endTime > :startTime
+                        """, Long.class)
+                .setParameter("reservationId", reservationId)
                 .setParameter("courtId", courtId)
                 .setParameter("startTime", startTime)
                 .setParameter("endTime", endTime)
