@@ -257,25 +257,29 @@ class ReservationDaoTest extends DaoUtils {
     }
 
     @Test
-    void findActiveByCourtNumberOrderByCreatedAtShouldExcludeReservationWhenCourtIsSoftDeleted() {
+    void findActiveByCourtNumberOrderByCreatedAtShouldIncludeReservationWhenCourtIsSoftDeleted() {
         Reservation reservation = createBasicReservation();
         reservation.getCourt().setDeleted(true);
         flushAndClear();
 
         List<Reservation> result = reservationDao.findActiveByCourtNumberOrderByCreatedAt("COURT-1");
 
-        assertThat(result).isEmpty();
+        assertThat(result)
+                .extracting(Reservation::getId)
+                .containsExactly(reservation.getId());
     }
 
     @Test
-    void findActiveByCourtNumberOrderByCreatedAtShouldExcludeReservationWhenCustomerIsSoftDeleted() {
+    void findActiveByCourtNumberOrderByCreatedAtShouldIncludeReservationWhenCustomerIsSoftDeleted() {
         Reservation reservation = createBasicReservation();
         reservation.getCustomer().setDeleted(true);
         flushAndClear();
 
         List<Reservation> result = reservationDao.findActiveByCourtNumberOrderByCreatedAt("COURT-1");
 
-        assertThat(result).isEmpty();
+        assertThat(result)
+                .extracting(Reservation::getId)
+                .containsExactly(reservation.getId());
     }
 
     @Test
