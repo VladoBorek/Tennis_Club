@@ -34,14 +34,14 @@ public class CourtService {
 
     @Transactional(readOnly = true)
     public CourtResponse getCourtById(Long id) {
-        Court court = findActiveCourtById(id);
+        Court court = getActiveCourtById(id);
         return CourtMapper.toResponse(court);
     }
 
     public CourtResponse createCourt(CourtRequest courtRequest) {
         validateCourtNumberIsUnique(courtRequest.courtNumber());
 
-        SurfaceType surfaceType = findActiveSurfaceTypeById(courtRequest.surfaceTypeId());
+        SurfaceType surfaceType = getActiveSurfaceTypeById(courtRequest.surfaceTypeId());
 
         Court court = new Court();
         court.setCourtNumber(courtRequest.courtNumber());
@@ -52,13 +52,13 @@ public class CourtService {
     }
 
     public CourtResponse updateCourt(Long id, CourtRequest courtRequest) {
-        Court court = findActiveCourtById(id);
+        Court court = getActiveCourtById(id);
 
         if (!court.getCourtNumber().equals(courtRequest.courtNumber())) {
             validateCourtNumberIsUnique(courtRequest.courtNumber());
         }
 
-        SurfaceType surfaceType = findActiveSurfaceTypeById(courtRequest.surfaceTypeId());
+        SurfaceType surfaceType = getActiveSurfaceTypeById(courtRequest.surfaceTypeId());
 
         court.setCourtNumber(courtRequest.courtNumber());
         court.setSurfaceType(surfaceType);
@@ -68,15 +68,15 @@ public class CourtService {
     }
 
     public void deleteCourt(Long id) {
-        courtDao.softDelete(findActiveCourtById(id));
+        courtDao.softDelete(getActiveCourtById(id));
     }
 
-    private Court findActiveCourtById(Long id) {
+    private Court getActiveCourtById(Long id) {
         return courtDao.findActiveById(id)
                 .orElseThrow(() -> new NotFoundException("Court not found"));
     }
 
-    private SurfaceType findActiveSurfaceTypeById(Long surfaceTypeId) {
+    private SurfaceType getActiveSurfaceTypeById(Long surfaceTypeId) {
         return surfaceTypeDao.findActiveById(surfaceTypeId)
                 .orElseThrow(() -> new NotFoundException("Surface type not found"));
     }
