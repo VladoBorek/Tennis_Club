@@ -1,4 +1,4 @@
-package com.example.tennis_club.dao;
+package com.example.tennis_club.daos;
 
 import com.example.tennis_club.entities.Reservation;
 import org.springframework.stereotype.Repository;

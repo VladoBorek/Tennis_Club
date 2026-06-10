@@ -1,4 +1,4 @@
-package com.example.tennis_club.dao;
+package com.example.tennis_club.daos;
 
 import com.example.tennis_club.entities.SurfaceType;
 import org.junit.jupiter.api.Test;
